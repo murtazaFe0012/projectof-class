@@ -9,9 +9,9 @@ const connection = await mysql.createConnection({
   database: 'eventdb',
 });
 
-await app.get('/', async (req, res) => {
+await app.get('/events', async (req, res) => { //get events
     try {
-        const [rows] = await connection.query('SELECT * FROM `roles`');   
+        const [rows] = await connection.query('SELECT * FROM `events`');   
         res.json(rows)
         return rows;
     } catch (err) {
@@ -19,6 +19,16 @@ await app.get('/', async (req, res) => {
     }
 })
 
+/*await app.get('/event?=slug', async (req, res) => { //get events
+    try {
+        const [rows] = await connection.query('SELECT * FROM `events`');   
+        res.json(rows)
+        return rows;
+    } catch (err) {
+        console.log(err);
+    }
+})*/
+
 app.listen(3000, () => {
-  console.log('Server is running on http://localhost:3000')
+  console.log('Server is courrir on http://localhost:3000')
 })
