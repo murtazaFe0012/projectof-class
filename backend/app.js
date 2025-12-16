@@ -19,6 +19,18 @@ await app.get('/events', async (req, res) => { //get events
     }
 })
 
+await app.get('/event', async (req, res) => { //get events
+    try {
+        console.log(req.query.slug);
+        res.sendStatus(200);
+        
+    } catch (err) {
+        console.log(err);
+    }
+})
+
+
+
 app.listen(3000, () => {
   console.log('Server is courrir on http://localhost:3000')
 })
