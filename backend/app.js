@@ -11,8 +11,6 @@ const connection = await mysql.createConnection({
 
 await app.get('/events', async (req, res) => { //get events
     try {
-        const [oldrows] = await connection.query('SELECT * FROM `events`');  
-        
         const [rows] = await connection.query(`
             SELECT
             e.title,
