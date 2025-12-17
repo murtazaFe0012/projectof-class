@@ -10,9 +10,6 @@ app.set('views', __dirname + '/views')
 
 
 app.get("/", async (req, res) => {
-<<<<<<< HEAD:frontend/new_event.js
-    res.render("views/home")
-=======
     try{
         const truc = await fetch("http://localhost:4000/events/");
         const data = await truc.json();
@@ -21,7 +18,6 @@ app.get("/", async (req, res) => {
         console.error(err);
         res.status(500).send("Erreur serveur");
     }
->>>>>>> 1e7a2518caa1684f794cf8c2d4f03359213d032d:frontend/appfront.js
 })
 
 app.listen(3000, () => {
