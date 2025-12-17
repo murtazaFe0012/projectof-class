@@ -11,6 +11,19 @@
 
 <body>
 
+    <div class="menu-bar">
+        <img src="/images/logo.png" alt="Logo">
+        <h1>EventHub</h1>
+        <div class="button-group">
+            <button class="create-event-btn">
+                Créer un événement
+            </button>
+            <button class="profile-btn" id="profile-btn" aria-label="Profil">
+                <img src="/image/profile-picture.png" alt="">
+            </button>
+        </div>
+    </div>
+
     <div class="filter-bar">
         <p class="filter">
             <i class="fas fa-filter"></i> Filtres:
@@ -18,15 +31,13 @@
             <button class="filter-btn">Tous les prix</button>
             <button class="filter-btn">Trier par date</button>
         </p>
-        <p>
-            <%= data.length %> événements trouvés
-        </p>
+
     </div>
 
     <div class="event-container">
 
         <% data.forEach(data=> { %>
-            <div class="event-card">
+            <div class="event-card" data-slug="<%= data.slug %>" role="button" tabindex="0">
                 <div class="card-header">
                     <img src="/<%= data.image_url %>" alt="<%= data.title %>">
                     <span class="event-category">
@@ -60,13 +71,31 @@
             <% }) %>
     </div>
 
-    <!-- <form method="POST" action="/new_event" style="padding: 20px; border-top: 1px solid #eee; margin-top: 20px;">
-        <h3>Ajouter un nouvel événement (Test)</h3>
-        Nom de l'event : <input name="name"><br><br>
-        Date de l'event : <input name="date"><br><br>
-        Ville de l'event : <input name="city"><br><br>
-        <button>Envoyer</button>
-    </form> -->
+    <script>
+        //rediriger vers la page profil
+        (function () {
+            const profileBtn = document.getElementById('profile-btn');
+            if (profileBtn) profileBtn.addEventListener('click', function () {
+                window.location.href = '/profil';
+            });
+
+            //carte cliquable et accessible au clavier
+            document.querySelectorAll('.event-card').forEach(function (card) {
+                const slug = card.dataset.slug;
+                if (!slug) return;
+                card.style.cursor = 'pointer';
+                card.addEventListener('click', function () {
+                    window.location.href = '/event?slug=' + encodeURIComponent(slug);
+                });
+                card.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        window.location.href = '/event?slug=' + encodeURIComponent(slug);
+                    }
+                });
+            });
+        })();
+    </script>
 
 </body>
 
