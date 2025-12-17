@@ -1,79 +1,12 @@
-<!-- <form method="POST" action="/new_event">
-    Nom de l'event : <input name="name">
-    Date de l'event : <input name="date">
-    Ville de l'event : <input name="city">
-    <button>Envoyer</button>
-</form> -->
 <!DOCTYPE html>
 <html lang="fr">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-        <%= title %>
+    <link rel="stylesheet" href="/css/home.css">
+    <title>yo
     </title>
-    <style>
-        .event-container {
-            display: flex;
-            gap: 20px;
-            padding: 20px;
-            flex-wrap: wrap;
-        }
-
-        .event-card {
-            flex: 1 1 30%;
-            min-width: 300px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .event-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .event-details {
-            padding: 15px;
-        }
-
-        .event-category {
-            position: absolute;
-            background-color: black;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 0 0 0 8px;
-            top: 0;
-            right: 0;
-        }
-
-        .card-header {
-            position: relative;
-        }
-
-        .event-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 10px;
-            border-top: 1px solid #eee;
-        }
-
-        .filter-bar {
-            padding: 20px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .filter {
-            display: flex;
-            gap: 20px;
-            padding: 20px;
-            flex-wrap: wrap;
-        }
-    </style>
 </head>
 
 <body>
@@ -86,41 +19,41 @@
             <button class="filter-btn">Trier par date</button>
         </p>
         <p>
-            <%= events.length %> événements trouvés
+            <%= data.length %> événements trouvés
         </p>
     </div>
 
     <div class="event-container">
 
-        <% events.forEach(event=> { %>
+        <% data.forEach(data=> { %>
             <div class="event-card">
                 <div class="card-header">
-                    <img src="/<%= event.image_url %>" alt="<%= event.title %>">
+                    <img src="/<%= data.image_url %>" alt="<%= data.title %>">
                     <span class="event-category">
-                        <%= event.category %>
+                        <%= data.category %>
                     </span>
                 </div>
 
                 <div class="event-details">
                     <h3>
-                        <%= event.title %>
+                        <%= data.title %>
                     </h3>
                     <p>
-                        <%= event.description %>
+                        <%= data.description %>
                     </p>
 
                     <p>
                         <i class="far fa-calendar-alt"></i>
-                        <%= event.date %><br>
+                        <%= data.date %><br>
                             <i class="fas fa-map-marker-alt"></i>
-                            <%= event.location %>
+                            <%= data.location %>
                     </p>
 
                     <div class="event-footer">
                         <span>
-                            <%= event.attendance %>/<%= event.capacity %>
+                            <%= data.attendance %>/<%= data.capacity %>
                         </span>
-                        <span style="font-weight: bold;">$ <%= event.price %></span>
+                        <span style="font-weight: bold;">$ <%= data.price %></span>
                     </div>
                 </div>
             </div>
