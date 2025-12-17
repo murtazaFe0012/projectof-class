@@ -41,19 +41,10 @@ await app.get('/e/:slug', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 })
-//here we get all addresses
-await app.get('/addresses', async (req, res) => {
-    try {
-        const [rows] = await connection.query('SELECT * FROM `adresses`');
-        res.json(rows);
-        return rows;
-    } catch (err) {
-        console.log(err);
-    }
-})
+
 
 //here we create new event using post method
-await app.post('/events', async (req, res) => {
+await app.post('/event', async (req, res) => {
     try {
         const {
              title,
