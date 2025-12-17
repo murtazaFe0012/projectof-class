@@ -18,14 +18,19 @@ await app.get('/events', async (req, res) => { //get events
         console.log(err);
     }
 })
-
-await app.get('/event', async (req, res) => { //get events
+//get each event by slug individually
+await app.get('/e/:slug', async (req, res) => { 
     try {
-        console.log(req.query.slug);
-        res.sendStatus(200);
+        const event = await connection.query('SELECT * FROM `events` WHERE slug = ?', [req.params.slug]);
+        if (!event){
+            return res.status(404).send('Event not found');
+        }
+        res.json(event[0]);
+        return event;
         
     } catch (err) {
         console.log(err);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 })
 
