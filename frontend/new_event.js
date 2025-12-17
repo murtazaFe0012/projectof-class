@@ -9,7 +9,7 @@ app.set('views', __dirname + '/views')
 
 
 app.get("/", async (req, res) => {
-    res.render("home")
+    res.render("views/home")
 })
 
 app.listen(3000, () => {
