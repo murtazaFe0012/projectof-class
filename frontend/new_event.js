@@ -2,7 +2,7 @@ const express = require("express")
 const app = express()
 
 
-// middlewares
+// middlewares //test
 app.use(express.urlencoded({ extended: true }))
 app.set('view engine', 'ejs')
 app.set('views', __dirname + '/views')
