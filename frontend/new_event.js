@@ -91,7 +91,7 @@ app.get("/", (req, res) => {
     // --- 2. Passer le tableau d'événements au template EJS ---
     res.render("home", {
         title: 'Événements',
-        events: events // C'est cette ligne qui corrige l'erreur !
+        events: events
     })
 })
 
