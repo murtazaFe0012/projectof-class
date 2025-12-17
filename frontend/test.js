@@ -10,7 +10,7 @@ async function openDb() {
         filename: './events.db',
         driver: sqlite3.Database
     });
-
+    //test
     await db.exec(`
         CREATE TABLE IF NOT EXISTS events (
             id INTEGER PRIMARY KEY,
