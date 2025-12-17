@@ -48,7 +48,7 @@ INSERT INTO `adresses` (`id`, `street`, `city`, `postalCode`, `country`, `longit
 (2, '5 Avenue des Technologies', 'La Rochelle', 17000, 'France', -1.155, 46.163),
 (3, '20 Boulevard des Arts', 'La Rochelle', 17000, 'France', -1.1525, 46.1605),
 (4, 'Parc du Marathon', 'La Rochelle', 17000, 'France', -1.164, 46.162),
-(, 'Centre Scientifique Jeunesse', 'La Rochelle', 17000, 'France', -1.158, 46.1615);
+(5, 'Centre Scientifique Jeunesse', 'La Rochelle', 17000, 'France', -1.158, 46.1615);
 
 -- --------------------------------------------------------
 
