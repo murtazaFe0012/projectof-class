@@ -44,12 +44,11 @@ CREATE TABLE IF NOT EXISTS `adresses` (
 --
 
 INSERT INTO `adresses` (`id`, `street`, `city`, `postalCode`, `country`, `longitude`, `latitude`) VALUES
-(1, NULL, NULL, NULL, NULL, NULL, NULL),
-(2, '12 Rue de la Musique', 'La Rochelle', 17000, 'France', -1.1615, 46.1591),
-(3, '5 Avenue des Technologies', 'La Rochelle', 17000, 'France', -1.155, 46.163),
-(4, '20 Boulevard des Arts', 'La Rochelle', 17000, 'France', -1.1525, 46.1605),
-(5, 'Parc du Marathon', 'La Rochelle', 17000, 'France', -1.164, 46.162),
-(6, 'Centre Scientifique Jeunesse', 'La Rochelle', 17000, 'France', -1.158, 46.1615);
+(1, '12 Rue de la Musique', 'La Rochelle', 17000, 'France', -1.1615, 46.1591),
+(2, '5 Avenue des Technologies', 'La Rochelle', 17000, 'France', -1.155, 46.163),
+(3, '20 Boulevard des Arts', 'La Rochelle', 17000, 'France', -1.1525, 46.1605),
+(4, 'Parc du Marathon', 'La Rochelle', 17000, 'France', -1.164, 46.162),
+(, 'Centre Scientifique Jeunesse', 'La Rochelle', 17000, 'France', -1.158, 46.1615);
 
 -- --------------------------------------------------------
 
