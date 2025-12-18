@@ -93,12 +93,12 @@
                 if (!slug) return;
                 card.style.cursor = 'pointer';
                 card.addEventListener('click', function () {
-                    window.location.href = '/event?slug=' + encodeURIComponent(slug);
+                    window.location.href = '/e/' + encodeURIComponent(slug);
                 });
                 card.addEventListener('keydown', function (e) {
                     if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
-                        window.location.href = '/event?slug=' + encodeURIComponent(slug);
+                        window.location.href = '/e/' + encodeURIComponent(slug);
                     }
                 });
             });
