@@ -23,7 +23,30 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10
 });
+await app.get('/categories', async (req, res) => { //get categorys
+    try {
+        const [rows] = await connection.query('SELECT * FROM categorys');
+        res.json(rows);
+        res.render("categorys", {data: rows});
+        return rows;
+    } catch (err) {
+        console.log(err);
+    }
+});
 
+//get all roles
+await app.get('/roles', async (req, res) => { //get roles
+    try {
+        const [rows] = await connection.query('SELECT * FROM roles');
+        res.json(rows)
+        res.render("roles", {data: rows});
+        return rows;
+    } catch (err) {
+        console.log(err);
+    }
+});
+
+//get all events
 await app.get('/events', async (req, res) => { //get events
     try {
         const [rows] = await connection.query(`
@@ -60,6 +83,7 @@ await app.get('/events', async (req, res) => { //get events
         console.log(err);
     }
 })
+
 //get each event by slug individually
 await app.get('/e/:slug', async (req, res) => { 
 
@@ -134,7 +158,7 @@ app.post('/event', async (req, res) => {
       return res.status(400).json({ error: 'Address is required' });
     }
 
-    // 1️⃣ Insert address
+    // Insert address
     const [addressResult] = await conn.execute(
       `INSERT INTO adresses (street, city, postalCode, country, longitude, latitude)
        VALUES (?, ?, ?, ?, ?, ?)`,
@@ -150,7 +174,7 @@ app.post('/event', async (req, res) => {
 
     const adresseID = addressResult.insertId;
 
-    // 2️⃣ Insert event
+    // Insert event
     const [eventResult] = await conn.execute(
       `INSERT INTO events
       (title, updateAt, dateStart, dateEnd, adresseID, orgranisatorID, categoryID,
@@ -174,7 +198,7 @@ app.post('/event', async (req, res) => {
     const eventId = eventResult.insertId;
     const slug = generateSlug(title, eventId);
 
-    // 3️⃣ Update slug
+    // Update slug
     await conn.execute(
       `UPDATE events SET slug = ? WHERE id = ?`,
       [slug, eventId]
@@ -193,7 +217,7 @@ app.post('/event', async (req, res) => {
     console.error('CREATE EVENT ERROR:', err);
     res.status(500).json({ error: 'Failed to create event' });
   } finally {
-    conn.release(); // ✅ REQUIRED
+    conn.release(); //
   }
 });
 
