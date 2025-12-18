@@ -5,6 +5,8 @@ import path from 'path';
 import session from 'express-session';
 import bcrypt from 'bcrypt';
 import { fileURLToPath } from 'url';
+const app = express()
+app.use(express.json());
 
 app.use(session({
   name: 'event-session',
@@ -23,8 +25,6 @@ function generateSlug(title, id) {
     return rawSlug;
 }
 
-const app = express()
-app.use(express.json());
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -46,9 +46,36 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10
 });
-await app.get('/categories', async (req, res) => { //get categorys
+//getting profile page
+app.get('/profile', (req, res) => {
+    res.render("profile");
+})
+
+//checking if user exists - login simulation
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
     try {
-        const [rows] = await connection.query('SELECT * FROM categorys');
+        const [rows] = await connection.execute(`
+          
+          SELECT u.id, u.Fname, u.Lname, u.mail, r.name 
+          AS role From users u
+          JOIN roles r ON u.roleID = r.id
+          WHERE u.mail = ? AND u.password = ?`,
+          [email, password]);
+        if (rows.length === 0) {
+            return res.status(401).json({ error: 'Invalid email or password' });
+        }
+        req.session.user = rows[0];
+        res.redirect('/events');
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: 'Internal Server Error' }); 
+    }
+});
+//get all categorys
+await app.get('/categories', async (req, res) => { //get categorys
+  try {
+    const [rows] = await connection.query('SELECT * FROM categorys');
         res.json(rows);
         res.render("categorys", {data: rows});
         return rows;
@@ -144,7 +171,7 @@ await app.get('/e/:slug', async (req, res) => {
             LEFT JOIN categorys c ON e.categoryID = c.id
             WHERE e.slug = ?
             `, [req.params.slug]);
-        res.json(rows)
+        // res.json(rows)
         res.render("event", {data: rows});
         return rows;
     } catch (err) {
@@ -153,32 +180,6 @@ await app.get('/e/:slug', async (req, res) => {
     }
 })
 
-//getting profile page
-app.get('/profile', (req, res) => {
-    res.render("profile");
-})
-
-//checking if user exists - login simulation
-app.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-    try {
-        const [rows] = await connection.execute(`
-          
-          SELECT u.id, u.Fname, u.Lname, u.mail, r.name 
-          AS role From users u
-          JOIN roles r ON u.roleID = r.id
-          WHERE u.mail = ? AND u.password = ?`,
-          [email, password]);
-        if (rows.length === 0) {
-            return res.status(401).json({ error: 'Invalid email or password' });
-        }
-        res.session.user = rows[0];
-        res.redirect('/profile');
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ error: 'Internal Server Error' }); 
-    }
-});
 
 //logout route
 app.post('/logout', (req, res) => {
