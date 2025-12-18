@@ -46,17 +46,6 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10
 });
-<<<<<<< HEAD
-await app.get('/categories', async (req, res) => { //get categorys
-  try {
-    const [rows] = await connection.query('SELECT * FROM categorys');
-    res.json(rows);
-    res.render("categorys", { data: rows });
-    return rows;
-  } catch (err) {
-    console.log(err);
-  }
-=======
 //getting profile page
 app.get('/profile', (req, res) => {
     res.render("profile");
@@ -93,7 +82,6 @@ await app.get('/categories', async (req, res) => { //get categorys
     } catch (err) {
         console.log(err);
     }
->>>>>>> murtaza
 });
 
 //get all roles
@@ -183,15 +171,6 @@ await app.get('/e/:slug', async (req, res) => {
             LEFT JOIN categorys c ON e.categoryID = c.id
             WHERE e.slug = ?
             `, [req.params.slug]);
-<<<<<<< HEAD
-    res.json(rows)
-    res.render("event", { data: rows });
-    return rows;
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-=======
         // res.json(rows)
         res.render("event", {data: rows});
         return rows;
@@ -199,7 +178,6 @@ await app.get('/e/:slug', async (req, res) => {
         console.log(err);
         res.status(500).json({ error: 'Internal Server Error' });
     }
->>>>>>> murtaza
 })
 
 
