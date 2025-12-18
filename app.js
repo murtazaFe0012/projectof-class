@@ -140,6 +140,31 @@ await app.get('/e/:slug', async (req, res) => {
     }
 })
 
+//getting profile page
+app.get('/profile', (req, res) => {
+    res.render("profile");
+})
+
+//checking if user exists - login simulation
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const [rows] = await connection.execute(
+            `SELECT * FROM users WHERE mail = ? AND password = ?`,
+            [email, password]
+        );
+        if (rows.length > 0) {
+          res.render("profile", {data: rows});
+            // res.status(200).json({ message: 'Login successful' });
+        } else {
+            res.status(401).json({ message: 'Invalid credentials' });
+        }
+    } catch (err) {
+        console.error('LOGIN ERROR:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 
 //here we create new event using post method
 
