@@ -1,0 +1,11 @@
+{
+    "type": "module",
+    "dependencies": {
+      "ejs": "^3.1.10",
+      "express": "^5.2.1",
+      "mysql2": "^3.15.3",
+      "path": "^0.12.7",
+      "slugify": "^1.6.6",
+      "url": "^0.11.4"
+    }
+}
