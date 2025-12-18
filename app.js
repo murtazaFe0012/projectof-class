@@ -2,7 +2,22 @@ import express from 'express';
 import mysql, { raw } from 'mysql2/promise';
 import slugify from 'slugify';
 import path from 'path';
+import session from 'express-session';
+import bcrypt from 'bcrypt';
 import { fileURLToPath } from 'url';
+const app = express()
+app.use(express.json());
+
+app.use(session({
+  name: 'event-session',
+  secret: 'SUPER_SECRET_KEY_CHANGE_ME',
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 2 // 2 hours
+  },
+  resave: false
+}));
 
 function generateSlug(title, id) {
   const rawSlug = `${slugify(title,
@@ -10,8 +25,6 @@ function generateSlug(title, id) {
   return rawSlug;
 }
 
-const app = express()
-app.use(express.json());
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,6 +46,7 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10
 });
+<<<<<<< HEAD
 await app.get('/categories', async (req, res) => { //get categorys
   try {
     const [rows] = await connection.query('SELECT * FROM categorys');
@@ -42,6 +56,44 @@ await app.get('/categories', async (req, res) => { //get categorys
   } catch (err) {
     console.log(err);
   }
+=======
+//getting profile page
+app.get('/profile', (req, res) => {
+    res.render("profile");
+})
+
+//checking if user exists - login simulation
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const [rows] = await connection.execute(`
+          
+          SELECT u.id, u.Fname, u.Lname, u.mail, r.name 
+          AS role From users u
+          JOIN roles r ON u.roleID = r.id
+          WHERE u.mail = ? AND u.password = ?`,
+          [email, password]);
+        if (rows.length === 0) {
+            return res.status(401).json({ error: 'Invalid email or password' });
+        }
+        req.session.user = rows[0];
+        res.redirect('/events');
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: 'Internal Server Error' }); 
+    }
+});
+//get all categorys
+await app.get('/categories', async (req, res) => { //get categorys
+  try {
+    const [rows] = await connection.query('SELECT * FROM categorys');
+        res.json(rows);
+        res.render("categorys", {data: rows});
+        return rows;
+    } catch (err) {
+        console.log(err);
+    }
+>>>>>>> murtaza
 });
 
 //get all roles
@@ -131,6 +183,7 @@ await app.get('/e/:slug', async (req, res) => {
             LEFT JOIN categorys c ON e.categoryID = c.id
             WHERE e.slug = ?
             `, [req.params.slug]);
+<<<<<<< HEAD
     res.json(rows)
     res.render("event", { data: rows });
     return rows;
@@ -138,32 +191,26 @@ await app.get('/e/:slug', async (req, res) => {
     console.log(err);
     res.status(500).json({ error: 'Internal Server Error' });
   }
-})
-
-//getting profile page
-app.get('/profile', (req, res) => {
-    res.render("profile");
-})
-
-//checking if user exists - login simulation
-app.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-    try {
-        const [rows] = await connection.execute(
-            `SELECT * FROM users WHERE mail = ? AND password = ?`,
-            [email, password]
-        );
-        if (rows.length > 0) {
-          res.render("profile", {data: rows});
-            // res.status(200).json({ message: 'Login successful' });
-        } else {
-            res.status(401).json({ message: 'Invalid credentials' });
-        }
+=======
+        // res.json(rows)
+        res.render("event", {data: rows});
+        return rows;
     } catch (err) {
-        console.error('LOGIN ERROR:', err);
+        console.log(err);
         res.status(500).json({ error: 'Internal Server Error' });
     }
+>>>>>>> murtaza
+})
+
+
+//logout route
+app.post('/logout', (req, res) => {
+  req.session.destroy(()=>{
+    res.clearCookie('event-session');
+    res.redirect('/login');
+  })
 });
+
 
 
 //here we create new event using post method
