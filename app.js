@@ -3,6 +3,9 @@ import mysql, { raw } from 'mysql2/promise';
 import slugify from 'slugify';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from "fs";
+import multer from "multer";
+import { log } from 'console';
 
 function generateSlug(title, id) {
     const rawSlug = `${slugify(title, 
@@ -142,7 +145,6 @@ await app.get('/e/:slug', async (req, res) => {
 
 
 //here we create new event using post method
-
 app.post('/event', async (req, res) => {
   const conn = await pool.getConnection(); // ✅ now exists
 
@@ -243,6 +245,34 @@ app.post('/categories', async (req, res) => {
 
 app.get("/create_event", async (req, res) => {
     res.render("create_event");
+})
+
+app.get("/test", (req, res) =>{
+  res.render("test")
+})
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, "/public/assets/img"));
+  },
+  filename: function (req, file, cb){
+    cb(null, file.originalname);
+  }
+});
+const upload = multer({ storage: storage });
+
+app.post("/upload", upload.single("image"),async (req, res) =>{
+   const conn = await pool.getConnection();
+  await conn.execute("INSERT INTO image (img) VALUES (?)",[req.file.filename]);
+  res.sendStatus(200);
+})
+
+app.get("/image/:id", async (req, res) =>{
+  const [results] = await connection.query(
+        "SELECT img FROM image WHERE id = ?",
+        [req.params.id]
+    );
+    res.sendFile(results[0].img, { root: path.join(__dirname, "public", "assets", "img") });
 })
 
 app.listen(3000, () => {
