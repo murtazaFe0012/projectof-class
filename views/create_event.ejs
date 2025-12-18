@@ -8,6 +8,13 @@
     <title>Créer Evenement</title>
 </head>
 <style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+    }
+
     .create-event-container {
         max-width: 60%;
         margin: 50px auto;
@@ -24,6 +31,16 @@
         border: 1.5px solid #919191;
         border-radius: 4px;
         box-sizing: border-box;
+        ;
+    }
+
+    .descr-div {
+        width: 100%;
+        padding: 5px;
+        border: 1.5px solid #919191;
+        border-radius: 4px;
+        box-sizing: border-box;
+        height: 90px;
     }
 
     .form-group {
@@ -35,14 +52,14 @@
 
 <body>
     <div class="menu-bar">
-        <img src="/images/logo.png" alt="Logo" max-width="50" class="logo">
+        <img src="/images/logo.png" alt="Logo" class="logo" style="max-width: 50px;">
         <h1>EventHub</h1>
         <div class="button-group">
-            <button class="create-event-btn">Événements</button>
-            <button class="create-event-btn">
-                Créer un événement
-            </button>
-            <button class="profile-btn" id="profile-btn" aria-label="Profil">
+            <button class="create-event-btn"
+                onclick="window.location.href='http://localhost:3000/events'">Événements</button>
+            <button class="create-event-btn"
+                onclick="window.location.href='http://localhost:3000/create_event'">Créer&nbspun&nbspévénement</button><!--&nbs est un espace-->
+            <button class="profile-btn" onclick="window.location.href='http://localhost:3000/profile'">
                 <img src="/image/profile-picture.png" alt="">
             </button>
         </div>
@@ -55,12 +72,14 @@
             <img src="img/titre_logo.png" alt="">
             <p>Titre de l'événement *</p>
             <label for="title"></label>
-            <input class="title-div" type="text" id="title" name="title" required>
+            <input class="title-div" type="text" id="title" name="title" required
+                placeholder="Ex: Festival de Jazz 2025...">
 
             <img src="img/desc_logo.png" alt="">
             <p>Description de l'événement *</p>
             <label for="description"></label>
-            <textarea id="description" name="description" required></textarea>
+            <textarea class="descr-div" name="description" required
+                placeholder="Décrivez votre événement..."></textarea>
 
             <img src="img/date_logo.png" alt="">
 
