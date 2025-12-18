@@ -5,14 +5,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/home.css">
-    <title>yo
-    </title>
+    <title>Home</title>
 </head>
 
 <body>
 
+    <div class="menu-bar">
+        <img src="/images/logo.png" alt="Logo" max-width="50" class="logo">
+        <h1>EventHub</h1>
+        <div class="button-group">
+            <button class="create-event-btn">Événements</button>
+            <button class="create-event-btn">
+                Créer un événement
+            </button>
+            <button class="profile-btn" id="profile-btn" aria-label="Profil">
+                <img src="/image/profile-picture.png" alt="">
+            </button>
+        </div>
+    </div>
+
     <div class="filter-bar">
         <p class="filter">
+            <button class="jour-nuit" id="toggle-dark" aria-pressed="false">☀️</button>
             <i class="fas fa-filter"></i> Filtres:
             <button class="filter-btn">Toutes les catégories</button>
             <button class="filter-btn">Tous les prix</button>
@@ -21,12 +35,17 @@
         <p>
             <%= data.length %> événements trouvés
         </p>
+
+    </div>
+
+    <div>
+
     </div>
 
     <div class="event-container">
 
         <% data.forEach(data=> { %>
-            <div class="event-card">
+            <div class="event-card" data-slug="<%= data.slug %>" role="button" tabindex="0">
                 <div class="card-header">
                     <img src="/<%= data.image_url %>" alt="<%= data.title %>">
                     <span class="event-category">
@@ -60,13 +79,64 @@
             <% }) %>
     </div>
 
-    <!-- <form method="POST" action="/new_event" style="padding: 20px; border-top: 1px solid #eee; margin-top: 20px;">
-        <h3>Ajouter un nouvel événement (Test)</h3>
-        Nom de l'event : <input name="name"><br><br>
-        Date de l'event : <input name="date"><br><br>
-        Ville de l'event : <input name="city"><br><br>
-        <button>Envoyer</button>
-    </form> -->
+    <script>
+        //rediriger vers la page profil
+        (function () {
+            const profileBtn = document.getElementById('profile-btn');
+            if (profileBtn) profileBtn.addEventListener('click', function () {
+                window.location.href = '/profil';
+            });
+
+            //carte cliquable et accessible au clavier
+            document.querySelectorAll('.event-card').forEach(function (card) {
+                const slug = card.dataset.slug;
+                if (!slug) return;
+                card.style.cursor = 'pointer';
+                card.addEventListener('click', function () {
+                    window.location.href = '/event?slug=' + encodeURIComponent(slug);
+                });
+                card.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        window.location.href = '/event?slug=' + encodeURIComponent(slug);
+                    }
+                });
+            });
+
+            //toggle jour / nuit
+            const toggleBtn = document.getElementById('toggle-dark');
+            const DARK_KEY = 'darkMode';
+            function applyDarkMode(enabled) {
+                if (enabled) {
+                    document.body.classList.add('dark-mode');
+                    if (toggleBtn) toggleBtn.setAttribute('aria-pressed', 'true');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    if (toggleBtn) toggleBtn.setAttribute('aria-pressed', 'false');
+                }
+                //mettre à jour l'emoji du bouton
+                if (toggleBtn) toggleBtn.textContent = enabled ? '🌙' : '☀️';
+            }
+            //état initial depuis localStorage
+            const saved = localStorage.getItem(DARK_KEY);
+            applyDarkMode(saved === 'true');
+
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function () {
+                    const enabled = document.body.classList.toggle('dark-mode');
+                    localStorage.setItem(DARK_KEY, enabled ? 'true' : 'false');
+                    toggleBtn.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+                    toggleBtn.textContent = enabled ? '🌙' : '☀️';
+                });
+                toggleBtn.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleBtn.click();
+                    }
+                });
+            }
+        })();
+    </script>
 
 </body>
 
