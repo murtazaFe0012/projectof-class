@@ -5,9 +5,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 function generateSlug(title, id) {
-    const rawSlug = `${slugify(title, 
-        { lower: true, strict: true, locale: 'fr' })}-tickets-${id}`;
-    return rawSlug;
+  const rawSlug = `${slugify(title,
+    { lower: true, strict: true, locale: 'fr' })}-tickets-${id}`;
+  return rawSlug;
 }
 
 const app = express()
@@ -34,32 +34,32 @@ const pool = mysql.createPool({
   connectionLimit: 10
 });
 await app.get('/categories', async (req, res) => { //get categorys
-    try {
-        const [rows] = await connection.query('SELECT * FROM categorys');
-        res.json(rows);
-        res.render("categorys", {data: rows});
-        return rows;
-    } catch (err) {
-        console.log(err);
-    }
+  try {
+    const [rows] = await connection.query('SELECT * FROM categorys');
+    res.json(rows);
+    res.render("categorys", { data: rows });
+    return rows;
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 //get all roles
 await app.get('/roles', async (req, res) => { //get roles
-    try {
-        const [rows] = await connection.query('SELECT * FROM roles');
-        res.json(rows)
-        res.render("roles", {data: rows});
-        return rows;
-    } catch (err) {
-        console.log(err);
-    }
+  try {
+    const [rows] = await connection.query('SELECT * FROM roles');
+    res.json(rows)
+    res.render("roles", { data: rows });
+    return rows;
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 //get all events
 await app.get('/events', async (req, res) => { //get events
-    try {
-        const [data] = await connection.query(`
+  try {
+    const [data] = await connection.query(`
             SELECT
             e.title,
             e.dateStart,
@@ -86,18 +86,18 @@ await app.get('/events', async (req, res) => { //get events
             LEFT JOIN organisators o ON e.orgranisatorID = o.id
             LEFT JOIN users u ON o.userID = u.id
             LEFT JOIN categorys c ON e.categoryID = c.id
-            `);  
-        res.render("home", { data });
-    } catch (err) {
-        console.log(err);
-    }
+            `);
+    res.render("home", { data });
+  } catch (err) {
+    console.log(err);
+  }
 })
 
 //get each event by slug individually
-await app.get('/e/:slug', async (req, res) => { 
+await app.get('/e/:slug', async (req, res) => {
 
-     try {
-        const [rows] = await connection.query(`
+  try {
+    const [rows] = await connection.query(`
             SELECT
             e.title,
             e.dateStart,
@@ -131,13 +131,13 @@ await app.get('/e/:slug', async (req, res) => {
             LEFT JOIN categorys c ON e.categoryID = c.id
             WHERE e.slug = ?
             `, [req.params.slug]);
-        res.json(rows)
-        res.render("event", {data: rows});
-        return rows;
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
+    res.json(rows)
+    res.render("event", { data: rows });
+    return rows;
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 })
 
 //getting profile page
@@ -258,18 +258,22 @@ app.post('/event', async (req, res) => {
 
 //here we create new catagory using post method
 app.post('/categories', async (req, res) => {
-    const { name } = req.body;
-    const [result] = await connection.execute(
-         `INSERT INTO categorys (name) VALUES (?)`,
+  const { name } = req.body;
+  const [result] = await connection.execute(
+    `INSERT INTO categorys (name) VALUES (?)`,
     [name]);
-    res.status(201).json({id: result.insertId, message: 'Category created successfully' });
+  res.status(201).json({ id: result.insertId, message: 'Category created successfully' });
 });
 
 
 app.get("/create_event", async (req, res) => {
-    res.render("create_event");
+  res.render("create_event");
+})
+
+app.get("/profile", async (req, res) => {
+  res.render("profile");
 })
 
 app.listen(3000, () => {
-    console.log('server running http://localhost:3000')
+  console.log('server running http://localhost:3000')
 })

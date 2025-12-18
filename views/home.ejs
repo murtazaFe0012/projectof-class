@@ -7,18 +7,26 @@
     <link rel="stylesheet" href="/css/home.css">
     <title>Home</title>
 </head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+    }
+</style>
 
 <body>
 
     <div class="menu-bar">
-        <img src="/images/logo.png" alt="Logo" max-width="50" class="logo">
+        <img src="/images/logo.png" alt="Logo" class="logo" style="max-width: 50px;">
         <h1>EventHub</h1>
         <div class="button-group">
-            <button class="create-event-btn">Événements</button>
-            <button class="create-event-btn">
-                Créer un événement
-            </button>
-            <button class="profile-btn" id="profile-btn" aria-label="Profil">
+            <button class="create-event-btn"
+                onclick="window.location.href='http://localhost:3000/events'">Événements</button>
+            <button class="create-event-btn"
+                onclick="window.location.href='http://localhost:3000/create_event'">Créer&nbspun&nbspévénement</button><!--&nbs est un espace-->
+            <button class="profile-btn" onclick="window.location.href='http://localhost:3000/profile'">
                 <img src="/image/profile-picture.png" alt="">
             </button>
         </div>
