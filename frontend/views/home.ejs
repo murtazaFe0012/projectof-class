@@ -5,16 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/home.css">
-    <title>yo
-    </title>
+    <title>Home</title>
 </head>
 
 <body>
 
     <div class="menu-bar">
-        <img src="/images/logo.png" alt="Logo">
+        <img src="/images/logo.png" alt="Logo" max-width="50" class="logo">
         <h1>EventHub</h1>
         <div class="button-group">
+            <button class="create-event-btn">Événements</button>
             <button class="create-event-btn">
                 Créer un événement
             </button>
@@ -26,11 +26,19 @@
 
     <div class="filter-bar">
         <p class="filter">
+            <button class="jour-nuit" id="toggle-dark" aria-pressed="false">☀️</button>
             <i class="fas fa-filter"></i> Filtres:
             <button class="filter-btn">Toutes les catégories</button>
             <button class="filter-btn">Tous les prix</button>
             <button class="filter-btn">Trier par date</button>
         </p>
+        <p>
+            <%= data.length %> événements trouvés
+        </p>
+
+    </div>
+
+    <div>
 
     </div>
 
@@ -94,6 +102,39 @@
                     }
                 });
             });
+
+            //toggle jour / nuit
+            const toggleBtn = document.getElementById('toggle-dark');
+            const DARK_KEY = 'darkMode';
+            function applyDarkMode(enabled) {
+                if (enabled) {
+                    document.body.classList.add('dark-mode');
+                    if (toggleBtn) toggleBtn.setAttribute('aria-pressed', 'true');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    if (toggleBtn) toggleBtn.setAttribute('aria-pressed', 'false');
+                }
+                //mettre à jour l'emoji du bouton
+                if (toggleBtn) toggleBtn.textContent = enabled ? '🌙' : '☀️';
+            }
+            //état initial depuis localStorage
+            const saved = localStorage.getItem(DARK_KEY);
+            applyDarkMode(saved === 'true');
+
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function () {
+                    const enabled = document.body.classList.toggle('dark-mode');
+                    localStorage.setItem(DARK_KEY, enabled ? 'true' : 'false');
+                    toggleBtn.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+                    toggleBtn.textContent = enabled ? '🌙' : '☀️';
+                });
+                toggleBtn.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleBtn.click();
+                    }
+                });
+            }
         })();
     </script>
 
