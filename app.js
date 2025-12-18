@@ -2,7 +2,20 @@ import express from 'express';
 import mysql, { raw } from 'mysql2/promise';
 import slugify from 'slugify';
 import path from 'path';
+import session from 'express-session';
+import bcrypt from 'bcrypt';
 import { fileURLToPath } from 'url';
+
+app.use(session({
+  name: 'event-session',
+  secret: 'SUPER_SECRET_KEY_CHANGE_ME',
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 2 // 2 hours
+  },
+  resave: false
+}));
 
 function generateSlug(title, id) {
     const rawSlug = `${slugify(title, 
@@ -149,21 +162,32 @@ app.get('/profile', (req, res) => {
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
     try {
-        const [rows] = await connection.execute(
-            `SELECT * FROM users WHERE mail = ? AND password = ?`,
-            [email, password]
-        );
-        if (rows.length > 0) {
-          res.render("profile", {data: rows});
-            // res.status(200).json({ message: 'Login successful' });
-        } else {
-            res.status(401).json({ message: 'Invalid credentials' });
+        const [rows] = await connection.execute(`
+          
+          SELECT u.id, u.Fname, u.Lname, u.mail, r.name 
+          AS role From users u
+          JOIN roles r ON u.roleID = r.id
+          WHERE u.mail = ? AND u.password = ?`,
+          [email, password]);
+        if (rows.length === 0) {
+            return res.status(401).json({ error: 'Invalid email or password' });
         }
+        res.session.user = rows[0];
+        res.redirect('/profile');
     } catch (err) {
-        console.error('LOGIN ERROR:', err);
-        res.status(500).json({ error: 'Internal Server Error' });
+        console.log(err);
+        res.status(500).json({ error: 'Internal Server Error' }); 
     }
 });
+
+//logout route
+app.post('/logout', (req, res) => {
+  req.session.destroy(()=>{
+    res.clearCookie('event-session');
+    res.redirect('/login');
+  })
+});
+
 
 
 //here we create new event using post method
