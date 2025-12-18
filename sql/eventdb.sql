@@ -70,9 +70,15 @@ CREATE TABLE IF NOT EXISTS `categorys` (
 INSERT INTO `categorys` (`id`, `name`) VALUES
 (1, 'Musique'),
 (2, 'Technologie'),
-(3, 'Art et Vin'),
+(3, 'Art et Culture'),
 (4, 'Sport'),
-(5, 'Science et Éducation');
+(5, 'Science et Éducation'),
+(6, 'Théâtre'),
+(7, 'Conférence'),
+(8, 'Cuisine'),
+(9, 'Atelier'),
+(10, 'Autre');
+
 
 -- --------------------------------------------------------
 
