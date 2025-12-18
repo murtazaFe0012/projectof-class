@@ -16,6 +16,13 @@ const connection = await mysql.createConnection({
   user: 'root',
   database: 'eventdb',
 });
+const pool = mysql.createPool({
+  host: 'localhost',
+  user: 'root',
+  database: 'eventdb',
+  waitForConnections: true,
+  connectionLimit: 10
+});
 
 await app.get('/events', async (req, res) => { //get events
     try {
@@ -55,14 +62,45 @@ await app.get('/events', async (req, res) => { //get events
 })
 //get each event by slug individually
 await app.get('/e/:slug', async (req, res) => { 
-    try {
-        const event = await connection.query('SELECT * FROM `events` WHERE slug = ?', [req.params.slug]);
-        if (!event){
-            return res.status(404).send('Event not found');
-        }
-        res.json(event[0]);
-        return event;
-        
+
+     try {
+        const [rows] = await connection.query(`
+            SELECT
+            e.title,
+            e.dateStart,
+            e.dateEnd,
+            e.description,
+            JSON_OBJECT(
+                'street', a.street,
+                'city' , a.city,
+                'postalCode', a.postalCode,
+                'country', a.country, 
+                'longitude', a.longitude,
+                'latitude', a.latitude
+            ) AS adresse,
+            JSON_OBJECT(
+                'company', o.name,
+                'contact', JSON_OBJECT(
+                    'mail', u.mail,
+                    'tel', u.tel
+                )
+            ) AS organisator,
+            c.name AS category,
+            e.prix,
+            e.availablePlaces,
+            e.maxPlaces,
+            e.image,
+            e.slug
+            FROM events e
+            LEFT JOIN adresses a ON e.adresseID = a.id
+            LEFT JOIN organisators o ON e.orgranisatorID = o.id
+            LEFT JOIN users u ON o.userID = u.id
+            LEFT JOIN categorys c ON e.categoryID = c.id
+            WHERE e.slug = ?
+            `, [req.params.slug]);
+        res.json(rows)
+        res.render("event", {data: rows});
+        return rows;
     } catch (err) {
         console.log(err);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -71,52 +109,95 @@ await app.get('/e/:slug', async (req, res) => {
 
 
 //here we create new event using post method
-await app.post('/event', async (req, res) => {
-    try {
-        const {
-             title,
+
+app.post('/event', async (req, res) => {
+  const conn = await pool.getConnection(); // ✅ now exists
+
+  try {
+    await conn.beginTransaction();
+
+    const {
+      title,
       dateStart,
       dateEnd,
-      adresseID,
-      orgranisatorID,
-      categoryID,
       description,
       prix,
       availablePlaces,
       maxPlaces,
-      image
-        } = req.body;
-        const [result] = await connection.execute(
-            `INSERT INTO events 
+      image,
+      categoryID,
+      orgranisatorID,
+      address
+    } = req.body;
+
+    if (!address) {
+      return res.status(400).json({ error: 'Address is required' });
+    }
+
+    // 1️⃣ Insert address
+    const [addressResult] = await conn.execute(
+      `INSERT INTO adresses (street, city, postalCode, country, longitude, latitude)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [
+        address.street,
+        address.city,
+        address.postalCode,
+        address.country,
+        address.longitude,
+        address.latitude
+      ]
+    );
+
+    const adresseID = addressResult.insertId;
+
+    // 2️⃣ Insert event
+    const [eventResult] = await conn.execute(
+      `INSERT INTO events
       (title, updateAt, dateStart, dateEnd, adresseID, orgranisatorID, categoryID,
        description, prix, availablePlaces, maxPlaces, image)
       VALUES (?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [title, dateStart, dateEnd, adresseID, orgranisatorID, categoryID, description, prix, availablePlaces, maxPlaces, image]);
+      [
+        title,
+        dateStart,
+        dateEnd,
+        adresseID,
+        orgranisatorID,
+        categoryID,
+        description,
+        prix,
+        availablePlaces,
+        maxPlaces,
+        image
+      ]
+    );
 
-      const slug = generateSlug(title, result.insertId);//generate slug after inserting to get the id
-    //update the event with the generated slug
-        await connection.execute(
-        `UPDATE events SET slug = ? WHERE id = ?`,
-             [slug, result.insertId]);
-        res.status(201).json({
-            message: 'Event created successfully',
-            id: result.insertId, 
-            slug});
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ error: 'Failed to create event' });
-    }
+    const eventId = eventResult.insertId;
+    const slug = generateSlug(title, eventId);
+
+    // 3️⃣ Update slug
+    await conn.execute(
+      `UPDATE events SET slug = ? WHERE id = ?`,
+      [slug, eventId]
+    );
+
+    await conn.commit();
+
+    res.status(201).json({
+      message: 'Event created successfully',
+      eventId,
+      slug
+    });
+
+  } catch (err) {
+    await conn.rollback();
+    console.error('CREATE EVENT ERROR:', err);
+    res.status(500).json({ error: 'Failed to create event' });
+  } finally {
+    conn.release(); // ✅ REQUIRED
+  }
 });
-//here we create new address using post method
-await app.post('/addresses', async (req, res) => {
-   const { street, city, postalCode, country, longitude, latitude } = req.body;
-   const [result] = await connection.execute(
-    `INSERT INTO adresses (street, city, postalCode, country, longitude, latitude)
-     VALUES (?, ?, ?, ?, ?, ?)`,
-    [street, city, postalCode, country, longitude, latitude]
-  );
-  res.status(201).json({id: result.insertId, message: 'Address created successfully' });
-});
+
+
 //here we create new catagory using post method
 app.post('/categories', async (req, res) => {
     const { name } = req.body;
